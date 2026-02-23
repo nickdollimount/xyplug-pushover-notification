@@ -1,0 +1,75 @@
+{
+	"type": "xypdf",
+	"description": "xyOps Portable Data Object",
+	"version": "1.0",
+	"items": [
+		{
+			"type": "plugin",
+			"data": {
+				"id": "pmlzoto5remm3cgc",
+				"title": "Pushover Notification",
+				"enabled": true,
+				"type": "action",
+				"command": "pwsh",
+				"script": "<#\n.SYNOPSIS\n\txyOps Pushover notification plugin - Sends a Pushover notification via API.\n\n.NOTES\n\tAuthor:         Nick Dollimount\n\tCopyright:      2026\n\n\tPlease see the README.md file for full documentation.\n#>\n\n# MARK: Send-PushoverMessage\nfunction Send-PushoverMessage {\n    param(\n        [Parameter(Mandatory = $true)][string]$UserKey,\n        [Parameter(Mandatory = $true)][string]$APIKey,\n        [Parameter(Mandatory = $true)][string]$Title,\n        [Parameter(Mandatory = $true)][string]$Text,\n        [Parameter(Mandatory = $false)][string]$Uri\n    )\n\n    $requestSplat = @{\n        Uri = \"https://api.pushover.net/1/messages.json\"\n        Method = \"POST\"\n        ContentType = \"application/json\"\n        Body = @{\n            user = $UserKey\n            token = $APIKey\n            message = $Text\n            title = $Title\n            url = $Uri\n        } | ConvertTo-Json -Depth 100\n    }\n\n    try {\n        $results = Invoke-RestMethod @requestSplat | ConvertTo-Json -Depth 100 -Compress\n        Write-Information -MessageData ([PSCustomObject]@{\n            xy = 1\n            code = 0\n            description = \"Pushover notification sent successfull!\"\n            details = $results\n        } | ConvertTo-Json -Depth 100 -Compress) -InformationAction Continue\n    }\n    catch {\n        Write-Information -MessageData ([PSCustomObject]@{\n            xy = 1\n            code = 9\n            description = \"Pushover notification failed!\"\n            details = $results\n        } | ConvertTo-Json -Depth 100 -Compress) -InformationAction Continue\n    }\n}\n\n\n# MARK: Begin\n\n[PSCustomObject]$xyOps = ConvertFrom-Json -Depth 100 (Read-Host)\n\n$pushoverUserKey = $xyOps.secrets.\"$($xyOps.params.userkeyvariable)\"\n$pushoverApiKey = $xyOps.secrets.\"$($xyOps.params.apikeyvariable)\"\n\nif (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationtext)) {\n    $pushoverNotificationText = $xyOps.params.pushovernotificationtext\n}\nelse {\n    $pushoverNotificationText = $xyOps.text -replace '(http[s]?|[s]?ftp[s]?)(:\\/\\/)([^\\s,]+)',''\n    $pushoverNotificationText += \"`n\"\n    $pushoverNotificationText += $xyOps.job.output\n}\n\nif (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationtitle)) {\n    $pushoverNotificationTitle = $xyOps.params.pushovernotificationtitle\n}\nelse {\n    $pushoverNotificationTitle = \"xyOps Alert\"\n}\n\nif (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationuri)) {\n    $pushoverNotificationUri = $xyOps.params.pushovernotificationuri\n}\nelse {\n    $pushoverNotificationUri = $xyOps.links.job_details\n}\n\nSend-PushoverMessage -UserKey $pushoverUserKey -APIKey $pushoverApiKey -Title $pushoverNotificationTitle -Text $pushoverNotificationText -Uri $pushoverNotificationUri",
+				"groups": [],
+				"format": "",
+				"params": [
+					{
+						"id": "userkeyvariable",
+						"title": "User Key Secret Variable Name",
+						"type": "text",
+						"caption": "The name of the variable that stores the user key in the secret vault.",
+						"locked": true,
+						"value": "XYOPS_PUSHOVER_USER_KEY",
+						"variant": "text",
+						"required": true
+					},
+					{
+						"id": "apikeyvariable",
+						"title": "API Key Secret Variable Name",
+						"type": "text",
+						"caption": "The name of the variable that stores the API key in the secret vault.",
+						"locked": true,
+						"value": "XYOPS_PUSHOVER_API_KEY",
+						"variant": "text",
+						"required": true
+					},
+					{
+						"id": "pushovernotificationtitle",
+						"title": "Notification Title",
+						"type": "text",
+						"caption": "Override the default notification title of 'xyOps Alert'.",
+						"locked": false,
+						"value": "",
+						"variant": "text",
+						"required": false
+					},
+					{
+						"id": "pushovernotificationtext",
+						"title": "Notification Text",
+						"type": "textarea",
+						"caption": "Override the default notification title of 'xyOps Alert'.",
+						"locked": false,
+						"value": "",
+						"required": false
+					},
+					{
+						"id": "pushovernotificationuri",
+						"title": "Notification Uri",
+						"type": "text",
+						"caption": "Override the default Uri that points to the job details.",
+						"locked": false,
+						"value": "",
+						"variant": "url",
+						"required": false
+					}
+				],
+				"notes": "",
+				"icon": "notification-clear-all",
+				"uid": "",
+				"gid": ""
+			}
+		}
+	]
+}
