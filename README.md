@@ -19,6 +19,7 @@ For detailed instructions on installing PowerShell, please review the [Microsoft
 
 - **User Key Secret Variable Name** - The name of the variable that stores the User key in the secret vault.
 - **API Key Secret Variable Name** - The name of the variable that stores the API key in the secret vault.
+- **Use App Notification Sound** - Checking this box allows the Pushover app to use its configured notification sound on the receiving device. Unchecking this box will use the sound option selected from the 'Notification Sound' parameter.
 - **Notification Sound** [optional] - Override the default Pushover notification sound.
 - **Notification Title** [optional] - Override the default notification title of 'xyOps Alert'.
 - **Notification Text** [optional] - Override the default notification text that contains the alert text provided by the xyOps job results.
