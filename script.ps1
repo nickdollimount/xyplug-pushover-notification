@@ -70,6 +70,13 @@ else {
     $pushoverNotificationText += $xyOps.job.output
 }
 
+if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationsound)) {
+    $pushoverNotificationSound = $xyOps.params.pushovernotificationsound
+}
+else {
+    $pushoverNotificationSound = "pushover"
+}
+
 if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationtitle)) {
     $pushoverNotificationTitle = $xyOps.params.pushovernotificationtitle
 }
@@ -84,4 +91,4 @@ else {
     $pushoverNotificationUri = $xyOps.links.job_details
 }
 
-Send-PushoverMessage -UserKey $pushoverUserKey -APIKey $pushoverApiKey -Title $pushoverNotificationTitle -Text $pushoverNotificationText -Uri $pushoverNotificationUri -Sound $xyOps.params.pushovernotificationsound
+Send-PushoverMessage -UserKey $pushoverUserKey -APIKey $pushoverApiKey -Title $pushoverNotificationTitle -Text $pushoverNotificationText -Uri $pushoverNotificationUri -Sound $pushoverNotificationSound
