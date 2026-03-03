@@ -16,38 +16,40 @@ function Send-PushoverMessage {
         [Parameter(Mandatory = $true)][string]$APIKey,
         [Parameter(Mandatory = $true)][string]$Title,
         [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $false)][string]$Sound = 'pushover',
         [Parameter(Mandatory = $false)][string]$Uri
     )
 
     $requestSplat = @{
-        Uri = "https://api.pushover.net/1/messages.json"
-        Method = "POST"
+        Uri         = "https://api.pushover.net/1/messages.json"
+        Method      = "POST"
         ContentType = "application/json"
-        Body = @{
-            user = $UserKey
-            token = $APIKey
+        Body        = @{
+            user    = $UserKey
+            token   = $APIKey
             message = $Text
-            title = $Title
-            url = $Uri
+            title   = $Title
+            url     = $Uri
+            sound   = $Sound
         } | ConvertTo-Json -Depth 100
     }
 
     try {
         $results = Invoke-RestMethod @requestSplat | ConvertTo-Json -Depth 100 -Compress
         Write-Information -MessageData ([PSCustomObject]@{
-            xy = 1
-            code = 0
-            description = "Pushover notification sent successfull!"
-            details = $results
-        } | ConvertTo-Json -Depth 100 -Compress) -InformationAction Continue
+                xy          = 1
+                code        = 0
+                description = "Pushover notification sent successfull!"
+                details     = $results
+            } | ConvertTo-Json -Depth 100 -Compress) -InformationAction Continue
     }
     catch {
         Write-Information -MessageData ([PSCustomObject]@{
-            xy = 1
-            code = 9
-            description = "Pushover notification failed!"
-            details = $results
-        } | ConvertTo-Json -Depth 100 -Compress) -InformationAction Continue
+                xy          = 1
+                code        = 9
+                description = "Pushover notification failed!"
+                details     = $results
+            } | ConvertTo-Json -Depth 100 -Compress) -InformationAction Continue
     }
 }
 
@@ -63,9 +65,16 @@ if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationtext)) {
     $pushoverNotificationText = $xyOps.params.pushovernotificationtext
 }
 else {
-    $pushoverNotificationText = $xyOps.text -replace '(http[s]?|[s]?ftp[s]?)(:\/\/)([^\s,]+)',''
+    $pushoverNotificationText = $xyOps.text -replace '(http[s]?|[s]?ftp[s]?)(:\/\/)([^\s,]+)', ''
     $pushoverNotificationText += "`n"
     $pushoverNotificationText += $xyOps.job.output
+}
+
+if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationsound)) {
+    $pushoverNotificationSound = $xyOps.params.pushovernotificationsound
+}
+else {
+    $pushoverNotificationSound = "pushover"
 }
 
 if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationtitle)) {
@@ -82,4 +91,4 @@ else {
     $pushoverNotificationUri = $xyOps.links.job_details
 }
 
-Send-PushoverMessage -UserKey $pushoverUserKey -APIKey $pushoverApiKey -Title $pushoverNotificationTitle -Text $pushoverNotificationText -Uri $pushoverNotificationUri
+Send-PushoverMessage -UserKey $pushoverUserKey -APIKey $pushoverApiKey -Title $pushoverNotificationTitle -Text $pushoverNotificationText -Uri $pushoverNotificationUri -Sound $pushoverNotificationSound

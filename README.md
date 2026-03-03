@@ -19,13 +19,14 @@ For detailed instructions on installing PowerShell, please review the [Microsoft
 
 - **User Key Secret Variable Name** - The name of the variable that stores the User key in the secret vault.
 - **API Key Secret Variable Name** - The name of the variable that stores the API key in the secret vault.
+- **Notification Sound** [optional] - Override the default Pushover notification sound.
 - **Notification Title** [optional] - Override the default notification title of 'xyOps Alert'.
 - **Notification Text** [optional] - Override the default notification text that contains the alert text provided by the xyOps job results.
 - **Notification Uri** [optional] - Override the default Uri that points to the job details.
 
 ## Usage
 
-You can use this action pluging with events and workflows. By default, the notification title will be 'xyOps Alert' with the included job result text provided by the xyOps job and the Uri will be set to the one provided by xyOps that links to the job details. Optionally, you can override those details using the parameters listed above.
+You can use this action pluging with events and workflows. By default, the notification title will be 'xyOps Alert' with the included job result text provided by the xyOps job and the Uri will be set to the one provided by xyOps that links to the job details. Optionally, you can override those details using the parameters listed above. You can also select from a list of built-in Pushover notification sounds for the individual alert. The list of sounds can be found and previewed [here](https://pushover.net/api#sounds).
 
 ## Setup
 
