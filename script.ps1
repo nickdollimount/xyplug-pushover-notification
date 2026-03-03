@@ -30,7 +30,7 @@ function Send-PushoverMessage {
             message = $Text
             title   = $Title
             url     = $Uri
-            sound   = $Sound
+            sound   = ($pushoverNotificationDefaultSound -eq $true) ? '' : $Sound
         } | ConvertTo-Json -Depth 100
     }
 
@@ -89,6 +89,13 @@ if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationuri)) {
 }
 else {
     $pushoverNotificationUri = $xyOps.links.job_details
+}
+
+if (-not [string]::IsNullOrEmpty($xyOps.params.pushovernotificationdefaultsound)) {
+    $pushoverNotificationDefaultSound = $xyOps.params.pushovernotificationdefaultsound
+}
+else {
+    $pushoverNotificationDefaultSound = $true
 }
 
 Send-PushoverMessage -UserKey $pushoverUserKey -APIKey $pushoverApiKey -Title $pushoverNotificationTitle -Text $pushoverNotificationText -Uri $pushoverNotificationUri -Sound $pushoverNotificationSound
